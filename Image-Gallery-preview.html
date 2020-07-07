@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        .BodyGradient{
+            background: #c31432;  
+            background: -webkit-linear-gradient(to right, #240b36, #c31432);  
+            background: linear-gradient(to right, #240b36, #c31432);
+        }
+        .mt-120{
+            margin-top: 120px;
+            color: whitesmoke;
+        }
+        #galleryImages {
+            float: left;
+            margin: 12px;
+        }
+        
+        #galleryImages a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 16px;
+            text-decoration: none;
+        }
+        
+        #galleryImages a:hover {
+            background-color: #111111;
+        }
+        img {
+            max-width: 200px;
+        }
+        
+        input[type=file] {
+            padding: 10px;
+        }
+        .thumb{
+            margin: 10px 5px 0 0;
+            width: 170px;
+        }
+        input[type="file"] {
+            display: block;
+        }
+        .imageThumb {
+            max-height: 75px;
+            border: 2px solid;
+            padding: 1px;
+            cursor: pointer;
+        }
+        .pip {
+            display: inline-block;
+            margin: 10px 10px 0 0;
+        }
+        .remove {
+            display: block;
+            background: #444;
+            border: 1px solid black;
+            color: white;
+            text-align: center;
+            cursor: pointer;
+        }
+        .remove:hover {
+            background: white;
+            color: black;
+        }
+    </style>
+</head>
+<body class="BodyGradient">
+    <div ng-app="myApp" ng-controller="myController">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3 class="text-center mt-120">Image Gallery Upload With Preview Using AngularJS</h3>
+                </div>
+                <div class="col-md-12">
+                    <div class="card card-primary">
+                        <ng-form role="form" name="frmAddKnowledge" autocomplete="off">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="col-md-12">
+                                            <div id="gallery-preview"></div>
+                                            <div class="form-group">
+                                                <label for="exampleInputFile">Select images :</label>
+                                                <div class="input-group">
+                                                    <div class="custom-file">
+                                                        <input type="file" id="file-input" class="form-control" name="fileName" file-model="fileName" id="file-input" onchange="angular.element(this).scope().imageUpload(event);" multiple/>
+                                                    </div>
+                                                    &nbsp;&nbsp;<button type="button" class="btn btn-danger btn-xs" onclick="hideGallery();"  ng-click="clearGallery()"><i class="fas fa-times-circle"></i>&nbsp;&nbsp;Remove Images </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var app = angular.module("myApp", []);
+        app.controller("myController", function($scope) {
+            $scope.imageUpload = function(event){
+                $scope.files = event.target.files; //Catch files using event on input box
+                console.log($scope.files); //Printing in console to check selected Files bunch
+            }
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
+    <!-- Image preview Script -->
+    <script>
+        $(document).ready(function(){
+            $('#file-input').on('change', function(){ //on file input change
+                if (window.File && window.FileReader && window.FileList && window.Blob) //check File API supported browser
+                {
+                    var data = $(this)[0].files; //this file data
+                    $.each(data, function(index, file){ //loop though each file
+                        if(/(\.|\/)(gif|jpe?g|png)$/i.test(file.type)){ //check supported file type
+                            var fRead = new FileReader(); //new filereader
+                            fRead.onload = (function(file){ //trigger function on successful read
+                                return function(e) {
+                                    var img = $('<img/>').addClass('thumb').attr('src', e.target.result); //create image element 
+                                    $('#gallery-preview').append(img); //append image to output element
+                                };
+                            })(file);
+                            fRead.readAsDataURL(file); //URL representing the file's data.
+                        }
+                    });
+                    
+                }else{
+                    alert("Your browser doesn't support File API!"); //if File API is absent
+                }
+            });
+        });
+        
+        //Hiding Galley on click of remove images Button and clear input box
+        function hideGallery(){
+            document.getElementById("gallery-preview").style.display ="none";
+            document.getElementById('file-input').value= null;
+            let images = document.getElementById("gallery-preview");
+            
+            var list = document.getElementById("gallery-preview").getElementsByTagName("img");
+            for (var k = list.length - 1; k >= 0; k--) {
+                var item = list[k];
+                item.parentNode.removeChild(item);
+            }
+        }
+    </script>
+</body>
+</html>
