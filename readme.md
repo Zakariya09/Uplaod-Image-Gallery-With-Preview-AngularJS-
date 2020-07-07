@@ -2,7 +2,7 @@
 # Utilization
 1 - Open folder in VS-Code.
 
-2 -  Run The index.html file.
+2 -  Run The .html file.
 
 3 - Inspect browser window by pressing F12 and select console.
 
